@@ -1,111 +1,87 @@
--- init.lua
--- LazyVim configuration for Go development
-
--- General settings
--- vim.opt.number = true -- Show line numbers
--- vim.opt.tabstop = 4 -- Set tab width to 4 spaces
--- vim.opt.shiftwidth = 4 -- Set indentation width to 4 spaces
--- vim.opt.expandtab = true -- Use spaces instead of tabs
--- vim.opt.smartindent = true -- Enable smart indentation
-
--- Keybindings
-vim.keymap.set("n", "<leader>e", vim.cmd.Ex, { desc = "Open file explorer" })
-
--- Bootstrap LazyVim
+-- lua/plugins/go.lua
 return {
-	-- Default LazyVim plugins
-	{ import = "lazyvim.plugins" },
-
-	-- Go-specific plugins
+	-- Go development plugin
 	{
-		"fatih/vim-go", -- Go development plugin
-		ft = "go", -- Load only for Go files
+		"ray-x/go.nvim",
+		dependencies = { "ray-x/guihua.lua" },
 		config = function()
-			-- vim-go settings
-			vim.g.go_fmt_command = "goimports" -- Use goimports instead of gofmt
-			vim.g.go_highlight_types = 1 -- Highlight types
-			vim.g.go_highlight_fields = 1 -- Highlight struct fields
-			vim.g.go_highlight_functions = 1 -- Highlight functions
-			vim.g.go_highlight_methods = 1 -- Highlight methods
-			vim.g.go_highlight_operators = 1 -- Highlight operators
-		end,
-	},
+			require("go").setup({
+				lsp_cfg = true, -- enable Go LSP (gopls)
+				lsp_keymaps = true, -- setup default keymaps
+				lsp_codelens = true, -- enable codelens
+				dap_debug = true, -- enable nvim-dap for Go debugging
+				textobjects = true,
+				gofumpt = true, -- format with gofumpt instead of gofmt
 
-	-- LSP configuration for Go
-	{
-		"neovim/nvim-lspconfig",
-		dependencies = {
-			"williamboman/mason.nvim",
-			"williamboman/mason-lspconfig.nvim",
-		},
-		config = function()
-			require("mason").setup()
-			require("mason-lspconfig").setup({
-				ensure_installed = { "gopls" }, -- Ensure gopls is installed
-			})
-
-			local lspconfig = require("lspconfig")
-			lspconfig.gopls.setup({
-				settings = {
+				-- ✅ gopls settings actually go here:
+				gopls_settings = {
 					gopls = {
 						analyses = {
 							unusedparams = true,
+							unusedwrite = true,
+							shadow = true,
 						},
 						staticcheck = true,
 					},
 				},
-			})
 
-			-- Keybindings for LSP
-			vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
-			vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Go to references" })
-			vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
-			vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code actions" })
+				-- ✅ custom keymap setup
+				on_attach = function(client, bufnr)
+					local opts = { noremap = true, silent = true, buffer = bufnr }
+					vim.keymap.set("n", "<leader>ca", function()
+						vim.lsp.buf.code_action()
+					end, opts)
+					print("Keymap <leader>ca set for Go buffer")
+				end,
+			})
 		end,
+
+		ft = { "go", "gomod" },
+		build = ':lua require("go.install").update_all()', -- install/update go tools
 	},
 
-	-- Treesitter for better syntax highlighting
-
-	-- Telescope for fuzzy finding
+	-- Treesitter for Go syntax highlighting
 	{
-		"nvim-telescope/telescope.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		config = function()
-			require("telescope").setup({
-				defaults = {
-					file_ignore_patterns = { "node_modules", "vendor" }, -- Ignore Go vendor directory
-				},
-			})
-
-			-- Keybindings for Telescope
-			vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
-			vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Live grep" })
-			vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
-		end,
+		"nvim-treesitter/nvim-treesitter",
+		opts = {
+			ensure_installed = { "go", "gomod", "gowork", "gosum" },
+		},
 	},
 
-	-- Debugging with nvim-dap
+	-- LSP config
+	{
+		"neovim/nvim-lspconfig",
+		opts = {
+			servers = {
+				gopls = {
+					settings = {
+						gopls = {
+							analyses = { unusedparams = true, shadow = true },
+							staticcheck = true,
+						},
+					},
+				},
+			},
+		},
+	},
+
+	-- Formatter (uses goimports or gofumpt if installed)
+	{
+		"stevearc/conform.nvim",
+		opts = {
+			formatters_by_ft = {
+				go = { "goimports", "gofumpt" },
+			},
+		},
+	},
+
+	-- Debugging (DAP for Go)
 	{
 		"mfussenegger/nvim-dap",
+		dependencies = { "leoluz/nvim-dap-go" },
 		config = function()
-			local dap = require("dap")
-			dap.adapters.go = {
-				type = "executable",
-				command = "dlv",
-				args = { "dap", "-l", "127.0.0.1:38697" },
-			}
-			dap.configurations.go = {
-				{
-					type = "go",
-					name = "Debug",
-					request = "launch",
-					program = "${file}",
-				},
-			}
-
-			-- Keybindings for DAP
-			vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Toggle breakpoint" })
-			vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Continue debugging" })
+			require("dap-go").setup()
 		end,
+		ft = "go",
 	},
 }

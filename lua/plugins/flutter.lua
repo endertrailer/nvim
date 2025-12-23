@@ -13,7 +13,7 @@ return {
 	config = function()
 		-- Flutter Tools Setup
 		require("flutter-tools").setup({
-			flutter_path = "/home/endertrailer/snap/flutter/common/flutter/bin/flutter",
+			flutter_path = "/home/endertrailer/flutter/bin/flutter",
 
 			ui = {
 				border = "rounded", -- string
@@ -48,7 +48,7 @@ return {
 				},
 				settings = {
 					dart = {
-						sdkPath = "/home/endertrailer/snap/flutter/common/flutter/bin/cache/dart-sdk",
+						sdkPath = "/home/endertrailer/flutter/bin/flutter",
 						completeFunctionCalls = true, -- recommended addition
 						showTodos = true, -- recommended addition
 					},

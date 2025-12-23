@@ -5,7 +5,7 @@ vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
 
 vim.opt.number = true
-
+-- vim.api.nvim_set_hl(0, "Cursor", { fg = "#3344ff", bg = "#339966" })
 -- Automatically format Dart files before saving
 -- vim.api.nvim_create_autocmd("BufWritePre", {
 -- 	pattern = "*.dart",
@@ -37,6 +37,11 @@ vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.splitkeep = "cursor"
 
+local opts = { noremap = true, silent = true }
+vim.keymap.set("n", "d", '"_d', opts)
+vim.keymap.set("n", "dd", '"_dd', opts)
+vim.keymap.set("n", "D", '"_D', opts)
+vim.keymap.set("v", "d", '"_d', opts)
 vim.opt.runtimepath:prepend("~/.config/nvim/override")
 -- vim.opt.mouse = ""
 vim.opt.relativenumber = true

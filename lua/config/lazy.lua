@@ -4,6 +4,7 @@ vim.filetype.add({
 		ejs = "html",
 	},
 })
+vim.lsp.enable("clangd")
 
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
@@ -67,7 +68,7 @@ require("lazy").setup({
 		},
 		-- Code runner
 		{ "CRAG666/code_runner.nvim", config = true },
-		{ "rafamadriz/friendly-snippets", enabled = false },
+		{ "rafamadriz/friendly-snippets", enabled = true },
 		-- Miscellaneous configurations
 		{ import = "lazyvim.plugins.extras.util.mini-hipatterns" },
 		{ import = "plugins" },

@@ -7,6 +7,7 @@ keymap.set("n", "x", '"_x')
 keymap.set("n", "+", "<C-a>")
 keymap.set("n", "-", "<C-x>")
 
+keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, silent = true })
 -- Select all
 keymap.set("n", "<C-a>", "gg<S-v>G")
 

@@ -2,7 +2,7 @@ return {
 	-- tools
 	--
 	{
-		"williamboman/mason.nvim",
+		"mason-org/mason.nvim",
 
 		opts = function(_, opts)
 			vim.list_extend(opts.ensure_installed, {
@@ -19,8 +19,18 @@ return {
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
 		dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use the mini.nvim suite
-		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+		dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.icons" }, -- if you use standalone mini plugins
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
+
+		{
+			"iamcco/markdown-preview.nvim",
+			cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+			build = "cd app && yarn install",
+			init = function()
+				vim.g.mkdp_filetypes = { "markdown" }
+			end,
+			ft = { "markdown" },
+		},
 		---@module 'render-markdown'
 		---@type render.md.UserConfig
 		opts = {},
@@ -44,7 +54,7 @@ return {
 			picker = { enabled = true },
 			quickfile = { enabled = true },
 			scope = { enabled = true },
-			scroll = { enabled = false },
+			scroll = { enabled = true },
 			statuscolumn = { enabled = true },
 			words = { enabled = true },
 		},
