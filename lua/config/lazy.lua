@@ -69,6 +69,23 @@ require("lazy").setup({
 		-- Code runner
 		{ "CRAG666/code_runner.nvim", config = true },
 		{ "rafamadriz/friendly-snippets", enabled = true },
+		{
+			"saghen/blink.cmp",
+			dependencies = {
+				-- This adds the massive repository of community snippets
+				"rafamadriz/friendly-snippets",
+			},
+			opts = {
+				snippets = {
+					preset = "default",
+					-- Keeps your custom directory working too
+					path = vim.fn.stdpath("config") .. "/snippets",
+				},
+				sources = {
+					default = { "lsp", "path", "snippets", "buffer" },
+				},
+			},
+		},
 		-- Miscellaneous configurations
 		{ import = "lazyvim.plugins.extras.util.mini-hipatterns" },
 		{ import = "plugins" },
